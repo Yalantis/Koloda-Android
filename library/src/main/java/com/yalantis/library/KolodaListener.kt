@@ -25,6 +25,14 @@ interface KolodaListener {
         //TODO implement this method if you need
     }
 
+    fun onClickRight(position: Int) {
+        //TODO implement this method if you need
+    }
+
+    fun onClickLeft(position: Int) {
+        //TODO implement this method if you need
+    }
+
     fun onCardSingleTap(position: Int) {
         //TODO implement this method if you need
     }

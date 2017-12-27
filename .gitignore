@@ -1,31 +1,9 @@
 *.iml
+.gradle
 /local.properties
+.DS_Store
+/build
 /captures
 .externalNativeBuild
-bin
-gen
-
-# log files
-log*.txt
-
-# archives
-*.gz
-*.tar
-*.zip
-
-# eclipse
-*.metadata
-*.settings
-*.prefs
-
-#idea
-*.idea
-out/
-
-build/
-.gradle/
-
-.keystore/
-app-release.apk
-
-.DS_Store
+.idea/
+gradle/

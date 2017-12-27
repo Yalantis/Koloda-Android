@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="default_card_spacing">12dp</dimen>
+    <dimen name="default_card_spacing">16dp</dimen>
 </resources>

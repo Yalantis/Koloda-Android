@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initializeDeck()
         fillData()
+        setUpCLickListeners()
     }
 
     override fun onStart() {
@@ -75,14 +76,26 @@ class MainActivity : AppCompatActivity() {
      * Fills deck with data
      */
     private fun fillData() {
-        val data = arrayOf("https://source.unsplash.com/Xq1ntWruZQI/600x800",
-                "https://source.unsplash.com/NYyCqdBOKwc/600x800",
-                "https://source.unsplash.com/buF62ewDLcQ/600x800",
-                "https://source.unsplash.com/THozNzxEP3g/600x800",
-                "https://source.unsplash.com/USrZRcRS2Lw/600x800",
-                "https://source.unsplash.com/PeFk7fzxTdk/600x800",
-                "https://source.unsplash.com/LrMWHKqilUw/600x800")
+        val data = arrayOf(R.drawable.cupcacke,
+                R.drawable.donut,
+                R.drawable.eclair,
+                R.drawable.froyo,
+                R.drawable.gingerbread,
+                R.drawable.honeycomb,
+                R.drawable.ice_cream_sandwich,
+                R.drawable.jelly_bean,
+                R.drawable.kitkat,
+                R.drawable.lollipop,
+                R.drawable.marshmallow,
+                R.drawable.nougat,
+                R.drawable.oreo)
         adapter = KolodaSampleAdapter(this, data.toList())
         koloda.adapter = adapter
+        koloda.isNeedCircleLoading = true
+    }
+
+    private fun setUpCLickListeners() {
+        dislike.setOnClickListener { koloda.onClickLeft() }
+        like.setOnClickListener { koloda.onClickRight() }
     }
 }

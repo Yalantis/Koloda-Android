@@ -10,15 +10,16 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.android.synthetic.main.item_koloda.*
 import kotlinx.android.synthetic.main.item_koloda.view.*
 
 
 /**
  * Created by anna on 11/10/17.
  */
-class KolodaSampleAdapter(val context: Context,val data: List<String>?) : BaseAdapter() {
+class KolodaSampleAdapter(val context: Context,val data: List<Int>?) : BaseAdapter() {
 
-    private val dataList = mutableListOf<String>()
+    private val dataList = mutableListOf<Int>()
 
     init {
         if (data != null) {
@@ -30,7 +31,7 @@ class KolodaSampleAdapter(val context: Context,val data: List<String>?) : BaseAd
         return dataList.size
     }
 
-    override fun getItem(position: Int): String {
+    override fun getItem(position: Int): Int {
         return dataList[position]
     }
 
@@ -38,7 +39,7 @@ class KolodaSampleAdapter(val context: Context,val data: List<String>?) : BaseAd
         return position.toLong()
     }
 
-    fun setData(data: List<String>) {
+    fun setData(data: List<Int>) {
         dataList.clear()
         dataList.addAll(data)
         notifyDataSetChanged()
@@ -67,7 +68,7 @@ class KolodaSampleAdapter(val context: Context,val data: List<String>?) : BaseAd
     class DataViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var picture = view.kolodaImage
 
-        internal fun bindData(context: Context, data: String) {
+        internal fun bindData(context: Context, data: Int) {
             val transforms = RequestOptions().transforms(CenterCrop(), RoundedCorners(20))
             Glide.with(context)
                     .load(data)

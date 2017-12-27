@@ -30,6 +30,8 @@ class Koloda : FrameLayout {
     private var dyingViews = hashSetOf<View>()
     private var activeViews = linkedSetOf<View>()
     private var dataSetObservable: DataSetObserver? = null
+    var isNeedCircleLoading = false
+
     var adapter: Adapter? = null
         set(value) {
             dataSetObservable?.let { field?.unregisterDataSetObserver(it) }
@@ -59,6 +61,7 @@ class Koloda : FrameLayout {
         cardPositionOffsetX = a.getDimensionPixelSize(R.styleable.Koloda_koloda_card_offsetX, resources.getDimensionPixelSize(R.dimen.default_card_spacing))
         cardPositionOffsetY = a.getDimensionPixelSize(R.styleable.Koloda_koloda_card_offsetY, resources.getDimensionPixelSize(R.dimen.default_card_spacing))
         cardRotationDegrees = a.getFloat(R.styleable.Koloda_koloda_card_rotate_angle, DEFAULT_ROTATION_ANGLE)
+
         a.recycle()
 
         if (isInEditMode) {
@@ -78,6 +81,9 @@ class Koloda : FrameLayout {
                 addView(it, 0)
                 deckMap.put(it, CardOperator(this, it, adapterPosition++, cardCallback))
             }
+        } else if (isNeedCircleLoading) {
+            adapterPosition = 0
+            addCardToDeck()
         }
     }
 
@@ -90,7 +96,8 @@ class Koloda : FrameLayout {
 
         scaleView(view, 0f, childCount)
         view?.translationY = (cardPositionOffsetY * childCount).toFloat()
-        Log.i("initializeCardPosition", view?.translationY.toString())
+        Log.i("----> elem init", childCount.toString())
+        Log.i("----> translation init", view?.translationY.toString())
         setZTranslations(childCount)
     }
 
@@ -119,34 +126,40 @@ class Koloda : FrameLayout {
     fun getMaxCardWidth(cardView: View): Float = cardView.height * Math.tan(Math.toRadians(cardRotationDegrees.toDouble())).toFloat()
 
     fun canSwipe(card: View): Boolean {
+        Log.e("====>Swipe ", swipeEnabled.toString())
+        Log.e("====>Active viewsempty ", activeViews.isEmpty().toString())
+        Log.e("====>Or contains ", (activeViews.contains(card)).toString())
+        Log.e("====>Index ", (indexOfChild(card) >= childCount - 2).toString())
         return (swipeEnabled && (activeViews.isEmpty() || activeViews.contains(card))
                 && indexOfChild(card) >= childCount - 2)
     }
 
     private fun updateDeckCardsPosition(progress: Float) {
-        val childCount = Math.min(childCount, maxVisibleCards + 1)
+        val visibleChildCount = Math.min(childCount, maxVisibleCards + 1)
+        var childCount = Math.min(childCount, maxVisibleCards)
         var cardsWillBeMoved = 0
 
         var cardView: View
-        (0 until childCount).map {
+
+        (0 until visibleChildCount).map {
             cardView = getChildAt(it)
-            if (deckMap.containsKey(cardView) && !(deckMap[cardView]?.isBeingDragged ?: false)) {
+            if (deckMap.containsKey(cardView) && deckMap[cardView]?.isBeingDragged != true) {
                 cardsWillBeMoved++
             }
-            scaleView(cardView, progress, DEFAULT_MAX_VISIBLE_CARDS - it)
+            scaleView(cardView, progress, childCount - it - 1)
         }
-        for (i in 0 until cardsWillBeMoved) {
-            cardView = getChildAt(i)
-            cardView.translationY = (cardPositionOffsetY * (DEFAULT_MAX_VISIBLE_CARDS - i + 1)).toFloat()
+        if (progress != 0.0f) {
+            for (i in 0 until cardsWillBeMoved) {
+                cardView = getChildAt(i)
+                cardView.translationY = (cardPositionOffsetY * Math.min(cardsWillBeMoved, visibleChildCount - i - 1) - cardPositionOffsetY * Math.abs(progress))
+            }
         }
     }
 
     private fun scaleView(view: View?, progress: Float, childCount: Int) {
-        Log.i("I ", childCount.toString())
         val currentScale = 1f - (childCount * DEFAULT_SCALE_DIFF)
         val nextScale = 1f - ((childCount - 1) * DEFAULT_SCALE_DIFF)
         val scale = currentScale + (nextScale - currentScale) * Math.abs(progress)
-        Log.i("Scale", scale.toString())
         if (scale <= 1f) {
             view?.scaleX = scale
             view?.scaleY = scale
@@ -223,7 +236,6 @@ class Koloda : FrameLayout {
         }
 
         override fun onCardActionUp(adapterPosition: Int, card: View, isCardNeedRemove: Boolean) {
-            Log.i("onCardActionUp", " card delete")
             if (isCardNeedRemove) {
                 activeViews.remove(card)
             }
@@ -261,6 +273,57 @@ class Koloda : FrameLayout {
 
         override fun onCardLongPress(adapterPosition: Int, card: View) {
             kolodaListener?.onCardLongPress(adapterPosition)
+        }
+
+        override fun onCardMovedOnClickRight(adapterPosition: Int, card: View, notify: Boolean) {
+            activeViews.remove(card)
+            dyingViews.add(card)
+            dataSetObservable?.onChanged()
+            findPositionAfterClick()
+            if (notify) {
+                kolodaListener?.onClickRight(adapterPosition)
+            }
+        }
+
+        override fun onCardMovedOnClickLeft(adapterPosition: Int, card: View, notify: Boolean) {
+            activeViews.remove(card)
+            dyingViews.add(card)
+            dataSetObservable?.onChanged()
+            findPositionAfterClick()
+            if (notify) {
+                kolodaListener?.onClickLeft(adapterPosition)
+            }
+        }
+    }
+
+    fun onClickRight() {
+        val childCount = childCount
+        val topCard = getChildAt(childCount - 1 - dyingViews.size)
+        topCard?.let {
+            activeViews.add(it)
+            val cardOperator: CardOperator? = deckMap[it]
+            cardOperator?.onClickRight()
+            it.rotation = 10f
+        }
+    }
+
+    fun onClickLeft() {
+        val childCount = childCount
+        val topCard = getChildAt(childCount - 1 - dyingViews.size)
+        topCard?.let {
+            activeViews.add(it)
+            val cardOperator: CardOperator? = deckMap[it]
+            cardOperator?.onClickLeft()
+            it.rotation = -10f
+        }
+    }
+
+    private fun findPositionAfterClick() {
+        var childCount = Math.min(childCount, maxVisibleCards)
+        (0 until childCount).map {
+            val view = getChildAt(it)
+            scaleView(view, 0f, childCount - it - 1)
+            view?.translationY = (cardPositionOffsetY * (childCount - it - 1)).toFloat()
         }
     }
 
