@@ -1,8 +1,8 @@
 # Koloda-Android
 
-<img src="swipe.jpg" width="300" height="600">
-<img src="swipe_down.jpg" width="300" height="600">
-<img src="swipe_top.jpg" width="300" height="600">
+<img src="swipe.jpg" width="300" height="500">
+<img src="swipe_down.jpg" width="300" height="500">
+<img src="swipe_top.jpg" width="300" height="500">
 
 ## Requirements
 - Android SDK 15+
