@@ -1,8 +1,8 @@
 # Koloda-Android
 
-<img src="swipe.jpg" width="800" height="600">
-<img src="swipe_down.jpg" width="800" height="600">
-<img src="swipe_top.jpg" width="800" height="600">
+<img src="swipe.jpg" width="300" height="600">
+<img src="swipe_down.jpg" width="300" height="600">
+<img src="swipe_top.jpg" width="300" height="600">
 
 ## Requirements
 - Android SDK 15+
@@ -22,7 +22,7 @@ allprojects {
 Add the dependency:
 ```Groovy
 dependencies {
-	        compile 'com.github.Yalantis:Koloda-Android:-SNAPSHOT'
+	        compile 'com.github.Yalantis:Koloda-Android:v0.0.1-alpha'
 	}
 ```
 
