@@ -34,17 +34,17 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
         }
 
         override fun onDoubleTap(e: MotionEvent?): Boolean {
-            cardCallback.onCardSingleTap(adapterPosition, cardView)
+            cardCallback.onCardDoubleTap(adapterPosition, cardView)
             return super.onDoubleTap(e)
         }
 
         override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-            cardCallback.onCardLongPress(adapterPosition, cardView)
+            cardCallback.onCardSingleTap(adapterPosition, cardView)
             return super.onSingleTapConfirmed(e)
         }
 
         override fun onLongPress(e: MotionEvent?) {
-            cardCallback.onCardDoubleTap(adapterPosition, cardView)
+            cardCallback.onCardLongPress(adapterPosition, cardView)
             super.onLongPress(e)
         }
     }
