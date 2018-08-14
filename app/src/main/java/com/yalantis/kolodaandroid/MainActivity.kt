@@ -2,11 +2,13 @@ package com.yalantis.kolodaandroid
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import com.yalantis.library.KolodaListener
 import kotlinx.android.synthetic.main.activity_main.*
 import android.annotation.SuppressLint
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewTreeObserver
+import com.yalantis.kolodaandroid.R.id.actionReload
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,8 +29,6 @@ class MainActivity : AppCompatActivity() {
             @SuppressLint("NewApi")
             override fun onGlobalLayout() {
                 //now we can retrieve the width and height
-                val width = activityMain.width
-                val height = activityMain.height
                 //...
                 //do whatever you want with them
                 //...
@@ -55,19 +55,19 @@ class MainActivity : AppCompatActivity() {
             internal var cardsSwiped = 0
 
             override fun onNewTopCard(position: Int) {
-                Toast.makeText(this@MainActivity, "On new top card", Toast.LENGTH_LONG).show()
+                //todo realize your logic
             }
 
             override fun onCardSwipedLeft(position: Int) {
-                Toast.makeText(this@MainActivity, "On card swiped left", Toast.LENGTH_LONG).show()
+                //todo realize your logic
             }
 
             override fun onCardSwipedRight(position: Int) {
-                Toast.makeText(this@MainActivity, "On card swiped right", Toast.LENGTH_LONG).show()
+                //todo realize your logic
             }
 
             override fun onEmptyDeck() {
-                Toast.makeText(this@MainActivity, "On empty deck", Toast.LENGTH_LONG).show()
+                //todo realize your logic
             }
         }
     }
@@ -77,18 +77,18 @@ class MainActivity : AppCompatActivity() {
      */
     private fun fillData() {
         val data = arrayOf(R.drawable.cupcacke,
-                R.drawable.donut,
-                R.drawable.eclair,
-                R.drawable.froyo,
-                R.drawable.gingerbread,
-                R.drawable.honeycomb,
-                R.drawable.ice_cream_sandwich,
-                R.drawable.jelly_bean,
-                R.drawable.kitkat,
-                R.drawable.lollipop,
-                R.drawable.marshmallow,
-                R.drawable.nougat,
-                R.drawable.oreo)
+            R.drawable.donut,
+            R.drawable.eclair,
+            R.drawable.froyo,
+            R.drawable.gingerbread,
+            R.drawable.honeycomb,
+            R.drawable.ice_cream_sandwich,
+            R.drawable.jelly_bean,
+            R.drawable.kitkat,
+            R.drawable.lollipop,
+            R.drawable.marshmallow,
+            R.drawable.nougat,
+            R.drawable.oreo)
         adapter = KolodaSampleAdapter(this, data.toList())
         koloda.adapter = adapter
         koloda.isNeedCircleLoading = true
@@ -97,5 +97,17 @@ class MainActivity : AppCompatActivity() {
     private fun setUpCLickListeners() {
         dislike.setOnClickListener { koloda.onClickLeft() }
         like.setOnClickListener { koloda.onClickRight() }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_reload, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            actionReload -> { koloda.reloadPreviousCard() }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
