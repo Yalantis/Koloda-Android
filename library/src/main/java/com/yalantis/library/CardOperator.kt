@@ -1,26 +1,33 @@
 package com.yalantis.library
 
 import android.animation.*
-import android.support.v4.view.VelocityTrackerCompat
 import android.view.GestureDetector
 import android.view.MotionEvent
-import android.view.View
 import android.view.VelocityTracker
+import android.view.View
 
 /**
  * Created by anna on 11/10/17.
  */
-class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: Int, val cardCallback: CardCallback) {
+class CardOperator(
+    val koloda: Koloda,
+    val cardView: CardLayout,
+    val adapterPosition: Int,
+    val cardCallback: CardCallback
+) {
 
-    companion object {
-        private const val DEFAULT_OFF_SCREEN_ANIMATION_DURATION = 600
-        private val DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION = 150
-        private val DEFAULT_RESET_ANIMATION_DURATION = 600
+    init {
+        cardView.setOnTouchListener { view, event -> onTouchView(view, event) }
     }
 
     private val cardGestureListener = object : GestureDetector.SimpleOnGestureListener() {
 
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+        override fun onFling(
+            e1: MotionEvent?,
+            e2: MotionEvent?,
+            velocityX: Float,
+            velocityY: Float
+        ): Boolean {
             if (e1?.x ?: 0f > e2?.x ?: 0f && cardBeyondLeftBorder()) {
                 cardCallback.onCardActionUp(adapterPosition, cardView, true)
                 animateOffScreenLeft(DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION, true, false)
@@ -59,26 +66,11 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
     private var initialCardPositionX: Float = 0.toFloat()
     private var initialCardPositionY: Float = 0.toFloat()
     private var animationCycle: AnimationCycle = AnimationCycle.NO_ANIMATION
-    private var velocityTrecker: VelocityTracker? = null
-
-    init {
-        cardView.setOnTouchListener { view, event -> onTouchView(view, event) }
-    }
+    private var velocityTracker: VelocityTracker? = null
 
     fun animateOffScreenLeft(duration: Int, notify: Boolean, isClicked: Boolean) {
-        var targetY = cardView.y
 
-        if (initialCardPositionY > cardView.y) {
-            targetY -= initialCardPositionY - cardView.y
-        } else {
-            targetY += (cardView.y - initialCardPositionY) * 3
-        }
-
-        val maxCardWidth = koloda.getMaxCardWidth(cardView)
-        val transitionX = (koloda.parentWidth / 2 + cardView.width / 2) +
-                cardView.x + Math.abs(maxCardWidth / 2)
-
-        val pvhX = PropertyValuesHolder.ofFloat("x", cardView.x, cardView.x - transitionX)
+        val pvhX = PropertyValuesHolder.ofFloat("x", cardView.x, cardView.x - calculateTransition())
         val pvhY = PropertyValuesHolder.ofFloat("y", cardView.y, cardView.y * 2)
         animateCardOffScreen(duration, pvhX, pvhY)
 
@@ -90,19 +82,8 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
     }
 
     fun animateOffScreenRight(duration: Int, notify: Boolean, isClicked: Boolean) {
-        var targetY = cardView.y
 
-        if (initialCardPositionY > cardView.y) {
-            targetY -= initialCardPositionY - cardView.y
-        } else {
-            targetY += (cardView.y - initialCardPositionY) * 3
-        }
-
-        val maxCardWidth = koloda.getMaxCardWidth(cardView)
-        val transitionX = koloda.parentWidth - (koloda.parentWidth / 2 - cardView.width / 2) +
-                cardView.x + Math.abs(maxCardWidth / 2)
-
-        val pvhX = PropertyValuesHolder.ofFloat("x", cardView.x, cardView.x + transitionX)
+        val pvhX = PropertyValuesHolder.ofFloat("x", cardView.x, cardView.x + calculateTransition())
         val pvhY = PropertyValuesHolder.ofFloat("y", cardView.y, cardView.y * 2)
         animateCardOffScreen(duration, pvhX, pvhY)
 
@@ -113,7 +94,25 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
         }
     }
 
-    private fun animateCardOffScreen(duration: Int, pvhX: PropertyValuesHolder, pvhY: PropertyValuesHolder) {
+    private fun calculateTransition(): Float {
+        var targetY = cardView.y
+
+        if (initialCardPositionY > cardView.y) {
+            targetY -= initialCardPositionY - cardView.y
+        } else {
+            targetY += (cardView.y - initialCardPositionY) * 3
+        }
+
+        val maxCardWidth = koloda.getMaxCardWidth(cardView)
+        return koloda.parentWidth - (koloda.parentWidth / 2 - cardView.width / 2) +
+                cardView.x + Math.abs(maxCardWidth / 2)
+    }
+
+    private fun animateCardOffScreen(
+        duration: Int,
+        pvhX: PropertyValuesHolder,
+        pvhY: PropertyValuesHolder
+    ) {
         swipedCardOffScreen()
 
         val valueAnimator = ValueAnimator()
@@ -134,18 +133,28 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
 
     private fun checkCardPosition() {
         when {
-            cardBeyondLeftBorder() -> animateOffScreenLeft(DEFAULT_OFF_SCREEN_ANIMATION_DURATION, true, false)
-            cardBeyondRightBorder() -> animateOffScreenRight(DEFAULT_OFF_SCREEN_ANIMATION_DURATION, true, false)
+            cardBeyondLeftBorder() -> animateOffScreenLeft(
+                DEFAULT_OFF_SCREEN_ANIMATION_DURATION,
+                true,
+                false
+            )
+            cardBeyondRightBorder() -> animateOffScreenRight(
+                DEFAULT_OFF_SCREEN_ANIMATION_DURATION,
+                true,
+                false
+            )
             else -> resetCardPosition(DEFAULT_RESET_ANIMATION_DURATION)
         }
     }
 
     private fun resetCardPosition(duration: Int) {
-        currentCardAnimator = ObjectAnimator.ofPropertyValuesHolder(cardView,
-                PropertyValuesHolder.ofFloat(View.X, initialCardPositionX),
-                PropertyValuesHolder.ofFloat(View.Y, initialCardPositionY),
-                PropertyValuesHolder.ofFloat(View.ROTATION, 0f))
-                .setDuration(duration.toLong())
+        currentCardAnimator = ObjectAnimator.ofPropertyValuesHolder(
+            cardView,
+            PropertyValuesHolder.ofFloat(View.X, initialCardPositionX),
+            PropertyValuesHolder.ofFloat(View.Y, initialCardPositionY),
+            PropertyValuesHolder.ofFloat(View.ROTATION, 0f)
+        )
+            .setDuration(duration.toLong())
         currentCardAnimator?.duration = 200
         currentCardAnimator?.addUpdateListener { updateCardProgress() }
         currentCardAnimator?.addListener(object : AnimatorListenerAdapter() {
@@ -169,7 +178,8 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
     }
 
     private fun updateCardProgress() {
-        var sideProgress = ((cardView.x + (cardView.width / 2)) - (koloda.parentWidth / 2)) / (koloda.parentWidth / 2)
+        var sideProgress =
+            ((cardView.x + (cardView.width / 2)) - (koloda.parentWidth / 2)) / (koloda.parentWidth / 2)
         if (sideProgress > 1f) {
             sideProgress = 1f
         } else if (sideProgress < -1f) {
@@ -181,8 +191,17 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
     private fun updateCardProgress(sideProgress: Float) {
         cardCallback.onCardDrag(adapterPosition, cardView, sideProgress)
 
-        val cardOffsetProgress = Math.max(Math.abs(cardView.x / cardView.width),
-                Math.abs(cardView.y / cardView.height))
+        val cardOffsetProgress = Math.max(
+            Math.abs(cardView.x / cardView.width),
+            Math.abs(cardView.y / cardView.height)
+        )
+
+        if (sideProgress > 0) {
+            cardView.changeRightOverlayAlpha(sideProgress)
+        } else {
+            cardView.changeLeftOverlayAlpha(sideProgress)
+        }
+
         if (!(isSwipedOffScreen && cardOffsetProgress > 1)) {
             cardCallback.onCardOffset(adapterPosition, cardView, sideProgress)
         }
@@ -207,10 +226,10 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
         val action = event.actionMasked
         when (action) {
             MotionEvent.ACTION_DOWN -> {
-                if (velocityTrecker == null) {
-                    velocityTrecker = VelocityTracker.obtain()
+                if (velocityTracker == null) {
+                    velocityTracker = VelocityTracker.obtain()
                 } else {
-                    velocityTrecker?.clear()
+                    velocityTracker?.clear()
                 }
                 if (animationCycle == AnimationCycle.NO_ANIMATION && !isBeingDragged) {
                     isBeingDragged = true
@@ -228,10 +247,10 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
             }
 
             MotionEvent.ACTION_MOVE -> {
-                velocityTrecker?.addMovement(event)
+                velocityTracker?.addMovement(event)
 
                 val pointerId = event.getPointerId(event.actionIndex)
-                velocityTrecker?.computeCurrentVelocity(pointerId, 40f)
+                velocityTracker?.computeCurrentVelocity(pointerId, 40f)
 
                 val pointerIndex = event.findPointerIndex(activePointerId)
 
@@ -239,11 +258,13 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
                     val dx = event.getX(pointerIndex) - initialTouchX
                     val dy = event.getY(pointerIndex) - initialTouchY
 
-                    val posX = (cardView.x + dx) + Math.abs((VelocityTrackerCompat.getXVelocity(velocityTrecker, pointerId)))
-                    val posY = (cardView.y + dy) + Math.abs((VelocityTrackerCompat.getYVelocity(velocityTrecker, pointerId)))
+                    velocityTracker?.let {
+                        val posX = (cardView.x + dx) + Math.abs(it.getXVelocity(pointerId))
+                        val posY = (cardView.y + dy) + Math.abs(it.getYVelocity(pointerId))
 
-                    cardView.x = posX
-                    cardView.y = posY
+                        cardView.x = posX
+                        cardView.y = posY
+                    }
 
                     updateCardProgress()
                 }
@@ -252,7 +273,11 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 activePointerId = MotionEvent.INVALID_POINTER_ID
                 checkCardPosition()
-                cardCallback.onCardActionUp(adapterPosition, cardView, (cardBeyondLeftBorder() || cardBeyondRightBorder()))
+                cardCallback.onCardActionUp(
+                    adapterPosition,
+                    cardView,
+                    (cardBeyondLeftBorder() || cardBeyondRightBorder())
+                )
             }
 
             MotionEvent.ACTION_POINTER_UP -> {
@@ -280,6 +305,12 @@ class CardOperator(val koloda: Koloda, val cardView: View, val adapterPosition: 
         initialCardPositionX = cardView.x
         initialCardPositionY = cardView.y
         animateOffScreenLeft(DEFAULT_OFF_SCREEN_ANIMATION_DURATION, true, true)
+    }
+
+    companion object {
+        private const val DEFAULT_OFF_SCREEN_ANIMATION_DURATION = 600
+        private const val DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION = 150
+        private const val DEFAULT_RESET_ANIMATION_DURATION = 600
     }
 
 }
