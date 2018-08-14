@@ -1,8 +1,10 @@
 # Koloda-Android
 
-<img src="swipe.jpg" width="300" height="500">
-<img src="swipe_down.jpg" width="300" height="500">
-<img src="swipe_top.jpg" width="300" height="500">
+<p align="center">
+	<img src="swipe.jpg" height = "480" width="270">
+	<img src="swipe_down.jpg" height = "480" width="270">
+	<img src="swipe_top.jpg" height = "480" width="270">
+</p>
 
 ## Requirements
 - Android SDK 15+
@@ -12,18 +14,18 @@
 Add to your root build.gradle:
 ```Groovy
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
+}
 ```
 
 Add the dependency:
 ```Groovy
 dependencies {
-	        compile 'com.github.Yalantis:Koloda-Android:v0.0.1-alpha'
-	}
+	compile 'com.github.Yalantis:Koloda-Android:v0.0.1-alpha'
+}
 ```
 
 ## How to use this library in your project?
@@ -32,11 +34,11 @@ First of all, add `Koloda` to the xml layout of your activity, so it looks like 
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-    <com.yalantis.library.Koloda
-  	 android:id="@+id/koloda"
-   	 android:layout_width="match_parent"
-   	 android:layout_height="match_parent"
-   	 app:koloda_card_layout="@layout/item_koloda" />
+<com.yalantis.library.Koloda
+	android:id="@+id/koloda"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	app:koloda_card_layout="@layout/item_koloda" />
 ```
 
 Create your adapter and set it to Koloda adapter
@@ -51,33 +53,37 @@ For customization ui Koloda you can use such attributes value :
 
 To control the card position by scale lower cards set koloda_card_scale_diff attributes float value in layout. The range of ScaleDiff is 0.01 - 0.1. The default value for ScaleDiff is 0.04f
 ```xml
- <com.yalantis.library.Koloda
-        ...	
+<com.yalantis.library.Koloda
+	...	
         app:koloda_card_scale_diff="0.04" 
-        .../>
+        ...
+/>
 ```
 
 To control distance between cards set value to koloda_card_offsetY in dp. The default value for CardOffsetY is 16dp.
 ```xml
  <com.yalantis.library.Koloda
-        ...	
+ 	...	
         app:koloda_card_offsetY="16dp" 
-        .../>
+        ...
+/>
 ```
 Change angle for card when swipe it you can set value to koloda_card_rotate_angle. The default value for CardRotateAngle is 30
 ```xml
- <com.yalantis.library.Koloda
-        ...	
+<com.yalantis.library.Koloda
+	...	
         app:koloda_card_rotate_angle="30"
-        .../>
+        ...
+/>
 ```
 
 Also you can change visible cards count in desk with koloda_max_visible_cards attributes. The default value for CardsVisible is 3
 ```xml
- <com.yalantis.library.Koloda
-        ...	
+<com.yalantis.library.Koloda
+	...	
         app:koloda_max_visible_cards="3"
-        .../>
+        ...
+/>
 ```
 
 Kolod has reloadPreviousCard() method which reload previous card
@@ -97,17 +103,18 @@ koloda.onButtonClick(true) - swipe to right
 ```
 
 Also you can create `KolodaListener` and use all the methods of the `KolodaListener`. This interface provides empty implementations of the methods. For any custom animation callback handle you can create any custom listener that cares only about a subset of the methods of this listener can simply implement the interface directly:
-<br>onNewTopCard(position: Int)<br />
-onCardDrag(position: Int, cardView: View, progress: Float)<br />
-onCardSwipedLeft(position: Int)<br />
-onCardSwipedRight(position: Int)<br />
-onClickRight(position: Int)<br />
-onClickLeft(position: Int)<br />
-onCardSingleTap(position: Int)<br />
-onCardDoubleTap(position: Int)<br />
-onCardLongPress(position: Int)<br />
-onEmptyDeck()<br />
-
+```
+onNewTopCard(position: Int)
+onCardDrag(position: Int, cardView: View, progress: Float)
+onCardSwipedLeft(position: Int)
+onCardSwipedRight(position: Int)
+onClickRight(position: Int)
+onClickLeft(position: Int)
+onCardSingleTap(position: Int)
+onCardDoubleTap(position: Int)
+onCardLongPress(position: Int)
+onEmptyDeck()
+```
 
 ## Let us know!
 
