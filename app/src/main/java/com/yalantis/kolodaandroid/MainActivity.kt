@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            actionReload -> { koloda.reloadPreviousCard() }
+            actionReload -> { koloda.reloadAdapterData() }
         }
         return super.onOptionsItemSelected(item)
     }
