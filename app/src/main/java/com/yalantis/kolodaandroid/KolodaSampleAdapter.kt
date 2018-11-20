@@ -1,7 +1,7 @@
 package com.yalantis.kolodaandroid
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,7 +65,7 @@ class KolodaSampleAdapter(val context: Context,val data: List<Int>?) : BaseAdapt
      * Static view items holder
      */
     class DataViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var picture = view.kolodaImage
+        private var picture = view.kolodaImage
 
         internal fun bindData(context: Context, data: Int) {
             val transforms = RequestOptions().transforms(CenterCrop(), RoundedCorners(20))
@@ -74,6 +74,5 @@ class KolodaSampleAdapter(val context: Context,val data: List<Int>?) : BaseAdapt
                     .apply(transforms)
                     .into(picture)
         }
-
     }
 }
