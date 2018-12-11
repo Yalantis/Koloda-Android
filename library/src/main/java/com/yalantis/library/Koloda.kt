@@ -225,7 +225,7 @@ constructor(context: Context, attrs: AttributeSet? = null,
 
             override fun onInvalidated() {
                 super.onInvalidated()
-                adapterPosition = 0
+                adapterPosition = -1
                 removeAllViews()
                 addCards()
             }
@@ -360,9 +360,7 @@ constructor(context: Context, attrs: AttributeSet? = null,
      * Reload all data. Start show data from the beginning
      */
     fun reloadAdapterData() {
-        removeAllViews()
-        adapterPosition = 0
-        dataSetObservable?.onChanged()
+        dataSetObservable?.onInvalidated()
     }
 
     /**
