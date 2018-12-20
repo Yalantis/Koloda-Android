@@ -86,12 +86,12 @@ Also you can change visible cards count in desk with koloda_max_visible_cards at
 />
 ```
 
-Kolod has reloadPreviousCard() method which reload previous card
+Koloda has reloadPreviousCard() method which reload previous card
 ```Kotlin
 koloda.reloadPreviousCard()
 ```
 
-Kolod has reloadAdapterData() method which reload all data(Start show data from the beginning)
+Koloda has reloadAdapterData() method which reload all data(Start show data from the beginning)
 ```Kotlin
 koloda.reloadAdapterData() 
 ```
