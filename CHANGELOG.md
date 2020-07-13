@@ -16,6 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added first version of library
 
-[Unreleased]: https://github.com/Yalantis/Koloda-Android/releases/tag/v0.0.2-alpha
+[Unreleased]: https://github.com/Yalantis/Koloda-Android/compare/v0.0.2-alpha..develop
 [0.0.2-alpha]: https://github.com/Yalantis/Koloda-Android/releases/tag/v0.0.2-alpha
 [0.0.1-alpha]: https://github.com/Yalantis/Koloda-Android/releases/tag/v0.0.1-alpha

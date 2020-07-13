@@ -3,15 +3,16 @@ package com.yalantis.library
 import android.annotation.TargetApi
 import android.content.Context
 import android.database.DataSetObserver
-import android.graphics.Color
 import android.os.Build
 import android.support.annotation.DrawableRes
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Adapter
 import android.widget.FrameLayout
+import com.yalantis.library.common.KolodaSwipeDirection
+import com.yalantis.library.util.CardCallback
+import com.yalantis.library.util.CardOperator
 
 /**
  * Created by anna on 11/10/17.
@@ -32,16 +33,15 @@ constructor(context: Context, attrs: AttributeSet? = null,
     private var dyingViews = hashSetOf<View>()
     private var activeViews = linkedSetOf<View>()
     private var dataSetObservable: DataSetObserver? = null
-    var isNeedCircleLoading = false
-    @DrawableRes
-    var rightOverlay: Int? = null
-    @DrawableRes
-    var leftOverlay: Int? = null
-    var cardXPos = 0
-    var cardYPos = 0
-    var cardWidth = 0
-    var cardHeight = 0
+    private var cardXPos = 0
+    private var cardYPos = 0
+    private var cardWidth = 0
+    private var cardHeight = 0
     private var alphaAnimation = false
+    private var adapterPosition = -1
+    private var deckMap = hashMapOf<View, CardOperator>()
+    private var swipeEnabled = true
+    internal var parentWidth = 0
 
     var adapter: Adapter? = null
         set(value) {
@@ -52,11 +52,17 @@ constructor(context: Context, attrs: AttributeSet? = null,
             dataSetObservable?.onChanged()
         }
 
-    private var adapterPosition = -1
-    private var deckMap = hashMapOf<View, CardOperator>()
+    var isNeedCircleLoading = false
+
+    @DrawableRes
+    var rightOverlay: Int? = null
+
+    @DrawableRes
+    var leftOverlay: Int? = null
+
     var kolodaListener: KolodaListener? = null
-    internal var parentWidth = 0
-    private var swipeEnabled = true
+
+    var swipeDirection: KolodaSwipeDirection = KolodaSwipeDirection.HORIZONTAL
 
     private fun init(attrs: AttributeSet?) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.Koloda)
@@ -130,7 +136,7 @@ constructor(context: Context, attrs: AttributeSet? = null,
     }
 
     fun getMaxCardWidth(cardView: View): Float = cardView.height * Math.tan(Math
-        .toRadians(cardRotationDegrees.toDouble())).toFloat()
+            .toRadians(cardRotationDegrees.toDouble())).toFloat()
 
     /**
      *  Checks capability of card view swiping
@@ -159,7 +165,7 @@ constructor(context: Context, attrs: AttributeSet? = null,
             for (i in 0 until cardsWillBeMoved) {
                 cardView = getChildAt(i)
                 cardView.translationY = (cardPositionOffsetY * Math
-                    .min(cardsWillBeMoved, maxVisibleCards - i - 1) - cardPositionOffsetY * Math.abs(progress))
+                        .min(cardsWillBeMoved, maxVisibleCards - i - 1) - cardPositionOffsetY * Math.abs(progress))
             }
         }
     }
@@ -331,7 +337,7 @@ constructor(context: Context, attrs: AttributeSet? = null,
      *  @param isSwipeCardToRight - true for right click remove aimation false for left click
      *  remove animation
      */
-    fun onButtonClick(isSwipeCardToRight: Boolean) {
+    private fun onButtonClick(isSwipeCardToRight: Boolean) {
         val childCount = childCount
         val topCard = getChildAt(childCount - 1 - dyingViews.size)
         topCard?.let {

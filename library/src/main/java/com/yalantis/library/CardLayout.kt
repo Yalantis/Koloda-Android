@@ -12,9 +12,12 @@ import android.widget.ImageView
 /**
  * Created by anna on 1/2/18.
  */
-class CardLayout
-@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null,
-                          defStyleAttr: Int = 0, var cardParams: CardParams) : FrameLayout(context, attrs, defStyleAttr) {
+class CardLayout @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+        var cardParams: CardParams
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private var rightImageView: ImageView? = null
     private var leftImageView: ImageView? = null

@@ -23,36 +23,12 @@ class MainActivity : AppCompatActivity() {
         setUpCLickListeners()
     }
 
-    override fun onStart() {
-        super.onStart()
-        activityMain.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            @SuppressLint("NewApi")
-            override fun onGlobalLayout() {
-                //now we can retrieve the width and height
-                //...
-                //do whatever you want with them
-                //...
-                //this is an important step not to keep receiving callbacks:
-                //we should remove this listener
-                //I use the function to remove it based on the api level!
-
-
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
-                    activityMain.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                else
-                    activityMain.viewTreeObserver.removeGlobalOnLayoutListener(this)
-            }
-        })
-    }
-
     /**
      * Initialize Deck and Adapter for filling Deck
      * Also implemented listener for caching requests
      */
     private fun initializeDeck() {
         koloda.kolodaListener = object : KolodaListener {
-
-            internal var cardsSwiped = 0
 
             override fun onNewTopCard(position: Int) {
                 //todo realize your logic
@@ -106,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            actionReload -> { koloda.reloadAdapterData() }
+            actionReload -> { koloda.reloadPreviousCard() }
         }
         return super.onOptionsItemSelected(item)
     }

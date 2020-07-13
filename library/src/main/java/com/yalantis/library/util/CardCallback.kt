@@ -1,4 +1,4 @@
-package com.yalantis.library
+package com.yalantis.library.util
 
 import android.view.View
 
@@ -6,7 +6,7 @@ import android.view.View
 /**
  * Created by anna on 11/10/17.
  */
-interface CardCallback {
+internal interface CardCallback {
 
     fun onCardActionDown(adapterPosition: Int, card: View)
 

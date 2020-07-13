@@ -1,19 +1,22 @@
-package com.yalantis.library
+package com.yalantis.library.util
 
 import android.animation.*
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
+import com.yalantis.library.CardLayout
+import com.yalantis.library.Koloda
+import com.yalantis.library.common.KolodaSwipeDirection
 
 /**
  * Created by anna on 11/10/17.
  */
-class CardOperator(
-    val koloda: Koloda,
-    val cardView: CardLayout,
-    val adapterPosition: Int,
-    val cardCallback: CardCallback
+internal class CardOperator(
+        val koloda: Koloda,
+        val cardView: CardLayout,
+        val adapterPosition: Int,
+        val cardCallback: CardCallback
 ) {
 
     init {
@@ -23,21 +26,15 @@ class CardOperator(
     private val cardGestureListener = object : GestureDetector.SimpleOnGestureListener() {
 
         override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent?,
-            velocityX: Float,
-            velocityY: Float
+                e1: MotionEvent?,
+                e2: MotionEvent?,
+                velocityX: Float,
+                velocityY: Float
         ): Boolean {
-            if (e1?.x ?: 0f > e2?.x ?: 0f && cardBeyondLeftBorder()) {
-                cardCallback.onCardActionUp(adapterPosition, cardView, true)
-                animateOffScreenLeft(DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION, true, false)
-                return true
-            } else if (e1?.x ?: 0f < e2?.x ?: 0f && cardBeyondRightBorder()) {
-                cardCallback.onCardActionUp(adapterPosition, cardView, true)
-                animateOffScreenRight(DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION, true, false)
-                return true
+            return when (koloda.swipeDirection) {
+                KolodaSwipeDirection.HORIZONTAL -> onFlingHorizontal(e1, e2)
+                else -> false
             }
-            return false
         }
 
         override fun onDoubleTap(e: MotionEvent?): Boolean {
@@ -54,6 +51,35 @@ class CardOperator(
             cardCallback.onCardLongPress(adapterPosition, cardView)
             super.onLongPress(e)
         }
+
+        private fun onFlingHorizontal(e1: MotionEvent?,
+                                      e2: MotionEvent?): Boolean {
+            if (e1?.x ?: 0f > e2?.x ?: 0f && cardBeyondLeftBorder()) {
+                cardCallback.onCardActionUp(adapterPosition, cardView, true)
+                animateOffScreenLeft(DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION, notify = true, isClicked = false)
+                return true
+            } else if (e1?.x ?: 0f < e2?.x ?: 0f && cardBeyondRightBorder()) {
+                cardCallback.onCardActionUp(adapterPosition, cardView, true)
+                animateOffScreenRight(DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION, notify = true, isClicked = false)
+                return true
+            }
+            return false
+        }
+
+        private fun onFlingVertical(e1: MotionEvent?,
+                                    e2: MotionEvent?): Boolean {
+            if (e1?.y ?: 0f > e2?.y ?: 0f && cardBeyondLeftBorder()) {
+                cardCallback.onCardActionUp(adapterPosition, cardView, true)
+                animateOffScreenLeft(DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION, notify = true, isClicked = false)
+                return true
+            } else if (e1?.x ?: 0f < e2?.x ?: 0f && cardBeyondRightBorder()) {
+                cardCallback.onCardActionUp(adapterPosition, cardView, true)
+                animateOffScreenRight(DEFAULT_OFF_SCREEN_FLING_ANIMATION_DURATION, notify = true, isClicked = false)
+                return true
+            }
+            return false
+        }
+
     }
 
     private val gestureDetector = GestureDetector(cardView.context, cardGestureListener, null, true)
@@ -109,9 +135,9 @@ class CardOperator(
     }
 
     private fun animateCardOffScreen(
-        duration: Int,
-        pvhX: PropertyValuesHolder,
-        pvhY: PropertyValuesHolder
+            duration: Int,
+            pvhX: PropertyValuesHolder,
+            pvhY: PropertyValuesHolder
     ) {
         swipedCardOffScreen()
 
@@ -134,14 +160,14 @@ class CardOperator(
     private fun checkCardPosition() {
         when {
             cardBeyondLeftBorder() -> animateOffScreenLeft(
-                DEFAULT_OFF_SCREEN_ANIMATION_DURATION,
-                true,
-                false
+                    DEFAULT_OFF_SCREEN_ANIMATION_DURATION,
+                    true,
+                    false
             )
             cardBeyondRightBorder() -> animateOffScreenRight(
-                DEFAULT_OFF_SCREEN_ANIMATION_DURATION,
-                true,
-                false
+                    DEFAULT_OFF_SCREEN_ANIMATION_DURATION,
+                    true,
+                    false
             )
             else -> resetCardPosition(DEFAULT_RESET_ANIMATION_DURATION)
         }
@@ -149,12 +175,12 @@ class CardOperator(
 
     private fun resetCardPosition(duration: Int) {
         currentCardAnimator = ObjectAnimator.ofPropertyValuesHolder(
-            cardView,
-            PropertyValuesHolder.ofFloat(View.X, initialCardPositionX),
-            PropertyValuesHolder.ofFloat(View.Y, initialCardPositionY),
-            PropertyValuesHolder.ofFloat(View.ROTATION, 0f)
+                cardView,
+                PropertyValuesHolder.ofFloat(View.X, initialCardPositionX),
+                PropertyValuesHolder.ofFloat(View.Y, initialCardPositionY),
+                PropertyValuesHolder.ofFloat(View.ROTATION, 0f)
         )
-            .setDuration(duration.toLong())
+                .setDuration(duration.toLong())
         currentCardAnimator?.duration = 200
         currentCardAnimator?.addUpdateListener { updateCardProgress() }
         currentCardAnimator?.addListener(object : AnimatorListenerAdapter() {
@@ -179,7 +205,7 @@ class CardOperator(
 
     private fun updateCardProgress() {
         var sideProgress =
-            ((cardView.x + (cardView.width / 2)) - (koloda.parentWidth / 2)) / (koloda.parentWidth / 2)
+                ((cardView.x + (cardView.width / 2)) - (koloda.parentWidth / 2)) / (koloda.parentWidth / 2)
         if (sideProgress > 1f) {
             sideProgress = 1f
         } else if (sideProgress < -1f) {
@@ -192,8 +218,8 @@ class CardOperator(
         cardCallback.onCardDrag(adapterPosition, cardView, sideProgress)
 
         val cardOffsetProgress = Math.max(
-            Math.abs(cardView.x / cardView.width),
-            Math.abs(cardView.y / cardView.height)
+                Math.abs(cardView.x / cardView.width),
+                Math.abs(cardView.y / cardView.height)
         )
 
         if (sideProgress > 0) {
@@ -274,9 +300,9 @@ class CardOperator(
                 activePointerId = MotionEvent.INVALID_POINTER_ID
                 checkCardPosition()
                 cardCallback.onCardActionUp(
-                    adapterPosition,
-                    cardView,
-                    (cardBeyondLeftBorder() || cardBeyondRightBorder())
+                        adapterPosition,
+                        cardView,
+                        (cardBeyondLeftBorder() || cardBeyondRightBorder())
                 )
             }
 
