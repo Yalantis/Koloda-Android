@@ -62,7 +62,7 @@ constructor(context: Context, attrs: AttributeSet? = null,
 
     var kolodaListener: KolodaListener? = null
 
-    var swipeDirection: KolodaSwipeDirection = KolodaSwipeDirection.HORIZONTAL
+    var swipeDirection: KolodaSwipeDirection = KolodaSwipeDirection.VERTICAL
 
     private fun init(attrs: AttributeSet?) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.Koloda)
@@ -184,9 +184,11 @@ constructor(context: Context, attrs: AttributeSet? = null,
         }
     }
 
-    private fun updateCardView(card: View, sideProgress: Float) {
-        val rotation = cardRotationDegrees.toInt() * sideProgress
-        card.rotation = rotation
+    private fun updateCardViewRotation(card: View, sideProgress: Float) {
+        if (swipeDirection == KolodaSwipeDirection.HORIZONTAL) {
+            val rotation = cardRotationDegrees.toInt() * sideProgress
+            card.rotation = rotation
+        }
     }
 
     override fun onParamsMeasure(layoutParamsCardView: LayoutParams) {
@@ -255,7 +257,7 @@ constructor(context: Context, attrs: AttributeSet? = null,
         }
 
         override fun onCardDrag(adapterPosition: Int, card: View, sideProgress: Float) {
-            updateCardView(card, sideProgress)
+            updateCardViewRotation(card, sideProgress)
             kolodaListener?.onCardDrag(adapterPosition, card, sideProgress)
         }
 
@@ -270,19 +272,25 @@ constructor(context: Context, attrs: AttributeSet? = null,
         }
 
         override fun onCardSwipedLeft(adapterPosition: Int, card: View, notify: Boolean) {
-            dyingViews.add(card)
-            dataSetObservable?.onChanged()
+            onCardSwipe(adapterPosition, card)
             if (notify) {
                 kolodaListener?.onCardSwipedLeft(adapterPosition)
             }
         }
 
         override fun onCardSwipedRight(adapterPosition: Int, card: View, notify: Boolean) {
-            dyingViews.add(card)
-            dataSetObservable?.onChanged()
+            onCardSwipe(adapterPosition, card)
             if (notify) {
                 kolodaListener?.onCardSwipedRight(adapterPosition)
             }
+        }
+
+        override fun onCardSwipeUp(adapterPosition: Int, card: View, notify: Boolean) {
+            onCardSwipe(adapterPosition, card)
+        }
+
+        override fun onCardSwipeDown(adapterPosition: Int, card: View, notify: Boolean) {
+            onCardSwipe(adapterPosition, card)
         }
 
         override fun onCardOffScreen(adapterPosition: Int, card: View) {
@@ -304,23 +312,37 @@ constructor(context: Context, attrs: AttributeSet? = null,
         }
 
         override fun onCardMovedOnClickRight(adapterPosition: Int, card: View, notify: Boolean) {
-            activeViews.remove(card)
-            dyingViews.add(card)
-            dataSetObservable?.onChanged()
-            findPositionAfterClick()
+            onCardMoveOn(adapterPosition, card)
             if (notify) {
                 kolodaListener?.onClickRight(adapterPosition)
             }
         }
 
         override fun onCardMovedOnClickLeft(adapterPosition: Int, card: View, notify: Boolean) {
+            onCardMoveOn(adapterPosition, card)
+            if (notify) {
+                kolodaListener?.onClickLeft(adapterPosition)
+            }
+        }
+
+        override fun onCardMovedOnClickUp(adapterPosition: Int, card: View, notify: Boolean) {
+            onCardMoveOn(adapterPosition, card)
+        }
+
+        override fun onCardMovedOnClickDown(adapterPosition: Int, card: View, notify: Boolean) {
+            onCardMoveOn(adapterPosition, card)
+        }
+
+        private fun onCardMoveOn(adapterPosition: Int, card: View) {
             activeViews.remove(card)
             dyingViews.add(card)
             dataSetObservable?.onChanged()
             findPositionAfterClick()
-            if (notify) {
-                kolodaListener?.onClickLeft(adapterPosition)
-            }
+        }
+
+        private fun onCardSwipe(adapterPosition: Int, card: View) {
+            dyingViews.add(card)
+            dataSetObservable?.onChanged()
         }
     }
 

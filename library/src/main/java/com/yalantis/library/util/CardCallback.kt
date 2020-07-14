@@ -20,9 +20,17 @@ internal interface CardCallback {
 
     fun onCardSwipedRight(adapterPosition: Int, card: View, notify: Boolean)
 
+    fun onCardSwipeUp(adapterPosition: Int, card: View, notify: Boolean)
+
+    fun onCardSwipeDown(adapterPosition: Int, card: View, notify: Boolean)
+
     fun onCardMovedOnClickRight(adapterPosition: Int, card: View, notify: Boolean)
 
     fun onCardMovedOnClickLeft(adapterPosition: Int, card: View, notify: Boolean)
+
+    fun onCardMovedOnClickUp(adapterPosition: Int, card: View, notify: Boolean)
+
+    fun onCardMovedOnClickDown(adapterPosition: Int, card: View, notify: Boolean)
 
     fun onCardOffScreen(adapterPosition: Int, card: View)
 
