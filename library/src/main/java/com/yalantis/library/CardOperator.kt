@@ -23,8 +23,8 @@ class CardOperator(
     private val cardGestureListener = object : GestureDetector.SimpleOnGestureListener() {
 
         override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent?,
+            e1: MotionEvent,
+            e2: MotionEvent,
             velocityX: Float,
             velocityY: Float
         ): Boolean {
@@ -40,17 +40,17 @@ class CardOperator(
             return false
         }
 
-        override fun onDoubleTap(e: MotionEvent?): Boolean {
+        override fun onDoubleTap(e: MotionEvent): Boolean {
             cardCallback.onCardDoubleTap(adapterPosition, cardView)
             return super.onDoubleTap(e)
         }
 
-        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
             cardCallback.onCardSingleTap(adapterPosition, cardView)
             return super.onSingleTapConfirmed(e)
         }
 
-        override fun onLongPress(e: MotionEvent?) {
+        override fun onLongPress(e: MotionEvent) {
             cardCallback.onCardLongPress(adapterPosition, cardView)
             super.onLongPress(e)
         }
@@ -158,7 +158,7 @@ class CardOperator(
         currentCardAnimator?.duration = 200
         currentCardAnimator?.addUpdateListener { updateCardProgress() }
         currentCardAnimator?.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator?, isReverse: Boolean) {
+            override fun onAnimationStart(animation: Animator, isReverse: Boolean) {
                 super.onAnimationStart(animation, isReverse)
                 animationCycle = AnimationCycle.ANIMATION_IN_PROGRESS
             }

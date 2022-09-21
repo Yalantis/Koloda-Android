@@ -3,15 +3,13 @@ package com.yalantis.library
 import android.annotation.TargetApi
 import android.content.Context
 import android.database.DataSetObserver
-import android.graphics.Color
 import android.os.Build
-import android.support.annotation.DrawableRes
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Adapter
 import android.widget.FrameLayout
+import androidx.annotation.DrawableRes
 
 /**
  * Created by anna on 11/10/17.
