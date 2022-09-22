@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.3"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -36,7 +36,6 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
     androidTestImplementation "com.android.support.test:runner:1.0.2"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:3.0.2"
-//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
     google()
