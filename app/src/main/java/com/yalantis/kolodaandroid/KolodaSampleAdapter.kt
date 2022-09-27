@@ -1,29 +1,27 @@
 package com.yalantis.kolodaandroid
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.synthetic.main.item_koloda.view.*
+import com.yalantis.kolodaandroid.databinding.ItemKolodaBinding
 
 
 /**
  * Created by anna on 11/10/17.
  */
-class KolodaSampleAdapter(val context: Context,val data: List<Int>?) : BaseAdapter() {
+class KolodaSampleAdapter(val context: Context, data: List<Int>) : BaseAdapter() {
 
     private val dataList = mutableListOf<Int>()
 
     init {
-        if (data != null) {
-            dataList.addAll(data)
-        }
+        dataList.addAll(data)
     }
 
     override fun getCount(): Int {
@@ -49,8 +47,9 @@ class KolodaSampleAdapter(val context: Context,val data: List<Int>?) : BaseAdapt
         var view = convertView
 
         if (view == null) {
-            view = LayoutInflater.from(parent.context).inflate(R.layout.item_koloda, parent, false)
-            holder = DataViewHolder(view)
+            val binding =
+                ItemKolodaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            holder = DataViewHolder(binding)
             view?.tag = holder
         } else {
             holder = view.tag as DataViewHolder
@@ -64,8 +63,8 @@ class KolodaSampleAdapter(val context: Context,val data: List<Int>?) : BaseAdapt
     /**
      * Static view items holder
      */
-    class DataViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var picture = view.kolodaImage
+    class DataViewHolder(binding: ItemKolodaBinding) : RecyclerView.ViewHolder(binding.root) {
+        var picture = binding.kolodaImage
 
         internal fun bindData(context: Context, data: Int) {
             val transforms = RequestOptions().transforms(CenterCrop(), RoundedCorners(20))

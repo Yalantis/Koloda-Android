@@ -2,12 +2,12 @@ package com.yalantis.library
 
 import android.content.Context
 import android.os.Build
-import android.support.annotation.DrawableRes
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 
 /**
  * Created by anna on 1/2/18.

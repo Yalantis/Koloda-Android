@@ -24,7 +24,7 @@ allprojects {
 Add the dependency:
 ```Groovy
 dependencies {
-	implementation 'com.github.Yalantis:Koloda-Android:v0.0.2-alpha'
+	implementation 'com.github.Yalantis:Koloda-Android:v0.0.3-alpha'
 }
 ```
 
